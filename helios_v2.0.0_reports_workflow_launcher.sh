@@ -1,18 +1,13 @@
 #!/bin/bash
 
-# USAGE
-# bash helios_v2.0.0_reports_launcher.sh <output_path>
-
-# EXAMPLE
-# bash helios_v2.0.0_reports_launcher.sh /output/TSO500-231220-TEST/eggd_tso500
-
-
 output_path="$1"
 
 # create a list of the sample ids from the samplesheet, print the number of samples
 samplesheet=$(dx find data --name "SampleSheet.csv"  --path "${output_path}/demultiplexOutput/" --norecurse --brief)
 sample_list=$(sed -e '1,/Sample_ID/ d' <(dx cat "$samplesheet")  | cut -d','  -f1)
-for f in $sample_list; do echo "$f"; done | wc -l
+
+sample_count=$(for f in $sample_list; do echo "$f"; done | wc -l)
+echo "${sample_count} samples identified"
 
 # define the reports workflow app to use (currently v1.3.3)
 workflow_id="project-Fkb6Gkj433GVVvj73J7x8KbV:workflow-Gf1PYgQ4yfKPx1zJ92x8p79y"
