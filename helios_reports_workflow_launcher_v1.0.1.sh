@@ -1,6 +1,11 @@
 #!/bin/bash
 
 output_path="$1"
+destination="${output_path%%\/eggd_tso500}"
+
+# define the REPORTS WORKFLOW VERSION to use (currently v1.3.4)
+workflow_id="project-Fkb6Gkj433GVVvj73J7x8KbV:workflow-Gfg89q84yfK7p3jG1y2gKPb6"
+workflow_name=$(dx describe --json "$workflow_id" | jq -r '.name')
 
 # create a list of the sample ids from the samplesheet, print the number of samples
 samplesheet=$(dx find data --name "SampleSheet.csv"  --path "${output_path}/demultiplexOutput/" --norecurse --brief)
@@ -9,10 +14,7 @@ sample_list=$(sed -e '1,/Sample_ID/ d' <(dx cat "$samplesheet")  | cut -d','  -f
 sample_count=$(for f in $sample_list; do echo "$f"; done | wc -l)
 echo "${sample_count} samples identified"
 
-# define the reports workflow app to use (currently v1.3.3)
-workflow_id="project-Fkb6Gkj433GVVvj73J7x8KbV:workflow-Gf1PYgQ4yfKPx1zJ92x8p79y"
-workflow_name=$(dx describe --json "$workflow_id" | jq -r '.name')
-
+# launch the reports workflow for each sample
 for sample_prefix in $sample_list; do
 
   # handles both old and new samplenames by adding "-" to old samples only to handle repeats
@@ -37,8 +39,8 @@ for sample_prefix in $sample_list; do
     -istage-GF25ZXj4b0bxQzBjG9jJ1q77.additional_files=$(dx find data --name "${sample_prefix}*_CombinedVariantOutput.tsv" --path ${output_path}/gather/Results/ --brief) \
     -istage-GF25ZXj4b0bxQzBjG9jJ1q77.additional_files=$(dx find data --name "MetricsOutput.tsv" --path ${output_path}/ --brief --norecurse) \
     --name "${workflow_name}_${sample_prefix%-}" \
-    --destination="${output_path}/$workflow_name" --brief -y ;
-    echo "Output: ${output_path}/$workflow_name"
+    --destination="${destination}/$workflow_name" --brief -y ;
+    echo "Output: ${destination}/$workflow_name"
 
   else
     echo -e "\nStarting workflow for RNA sample ${sample_prefix}"
@@ -51,7 +53,7 @@ for sample_prefix in $sample_list; do
     -istage-GF25ZXj4b0bxQzBjG9jJ1q77.additional_files=$(dx find data --name "${sample_prefix}*_CombinedVariantOutput.tsv" --path ${output_path}/gather/Results/ --brief) \
     -istage-GF25ZXj4b0bxQzBjG9jJ1q77.additional_files=$(dx find data --name "MetricsOutput.tsv" --path ${output_path}/ --brief --norecurse) \
     --name "${workflow_name}_${sample_prefix%-}" \
-    --destination="${output_path}/$workflow_name" --brief -y ;
-    echo "Output: ${output_path}/$workflow_name"
+    --destination="${destination}/$workflow_name" --brief -y ;
+    echo "Output: ${destination}/$workflow_name"
   fi
 done
