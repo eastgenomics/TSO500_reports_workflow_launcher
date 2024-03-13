@@ -5,8 +5,8 @@ Requires the path to the main output of eggd_tso500 to be supplied as a command 
 
 ```
 # USAGE
-# bash helios_reports_workflow_launcher_v1.1.0.sh <output_path>
+# bash helios_reports_workflow_launcher_v1.2.0.sh <output_path>
 
 # EXAMPLE
-# bash helios_reports_workflow_launcher_v1.1.0.sh /output/TSO500-231220-TEST/eggd_tso500
+# bash helios_reports_workflow_launcher_v1.2.0.sh /output/TSO500-231220-TEST/eggd_tso500
 ```
